@@ -1,16 +1,18 @@
 <div align="center">
 
-# 🧪 Sentiment Lab
-### End-to-End NLP Pipeline for Product Review Sentiment Analysis — with a Live 3D UI
+<img src="assets/banner.svg" alt="Sentiment Lab banner" width="100%"/>
+
+<br/>
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.0-000000?style=flat-square&logo=flask&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
+![scikit--learn](https://img.shields.io/badge/scikit--learn-1.5-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
 ![Three.js](https://img.shields.io/badge/Three.js-r128-000000?style=flat-square&logo=three.js&logoColor=white)
-![License](https://img.shields.io/badge/status-demo-8c93ac?style=flat-square)
+![Status](https://img.shields.io/badge/status-demo-8c93ac?style=flat-square)
 
-*Data Acquisition → Text Preparation → Feature Engineering → Modelling → Deployment*
-*— rendered live as a colour-shifting 3D particle orb.*
+**A complete NLP pipeline — from raw reviews to a live 3D sentiment orb.**
+
+[Overview](#-overview) · [Preview](#-preview) · [Quickstart](#-quickstart) · [Pipeline](#-the-pipeline) · [Deployment](#5%EF%B8%8F%E2%83%A3-deployment) · [3D UI](#-3d-ui-under-the-hood)
 
 </div>
 
@@ -19,17 +21,58 @@
 ## 📖 Overview
 
 **Sentiment Lab** classifies product reviews into `positive` / `neutral` / `negative`
-using a classic TF-IDF + Logistic Regression pipeline, served through a Flask API,
-and visualised through a **Three.js 3D orb** that morphs colour, size, and
+using a TF-IDF + Logistic Regression pipeline, served through a Flask API and
+visualised through a **Three.js 3D orb** that morphs colour, size, and
 turbulence in real time based on the prediction.
 
-| | |
-|---|---|
-| 🎯 **Task** | 3-class sentiment classification on e-commerce reviews |
-| 🧠 **Model** | TF-IDF (1–2 grams) + meta-features → Logistic Regression |
-| 🌐 **Interface** | Flask REST API + single-file Three.js 3D UI |
-| 📦 **Dependencies** | scikit-learn, Flask, pandas, joblib — no GPU needed |
-| ⚡ **Setup time** | < 2 minutes, fully offline |
+<div align="center">
+
+| | | | |
+|:---:|:---:|:---:|:---:|
+| 🎯 **Task** | 🧠 **Model** | 🌐 **Interface** | ⚡ **Setup** |
+| 3-class sentiment | TF-IDF + LogReg | Flask API + 3D UI | < 2 min, offline |
+
+</div>
+
+---
+
+## 🖼 Preview
+
+<div align="center">
+<img src="assets/ui-preview.svg" alt="App UI preview" width="100%"/>
+
+<sub>Left — text input & example chips · Right — live 3D orb + probability bars</sub>
+</div>
+
+<br/>
+
+<div align="center">
+
+| Orb colour | Meaning | Orb behaviour | Signal |
+|:---:|:---|:---|:---|
+| 🟢 Teal | Positive | Grows larger | Higher confidence |
+| 🟡 Amber | Neutral | — | — |
+| 🔴 Coral | Negative | Spikier / noisier | Higher uncertainty |
+
+</div>
+
+---
+
+## 🚀 Quickstart
+
+```bash
+cd sentiment_nlp_app
+pip install -r requirements.txt
+
+# 1️⃣  Generate data + train the model
+python src/train_model.py
+
+# 2️⃣  Launch the API + 3D UI
+python app.py
+```
+
+Open **`http://localhost:5000`** → type or paste a review (or click an example
+chip) → hit **Analyze sentiment** → watch the orb react live.
 
 ---
 
@@ -41,6 +84,10 @@ sentiment_nlp_app/
 ├── 🧠 app.py                      Flask API + 3D UI server
 ├── 📋 requirements.txt            Python dependencies
 ├── 📘 README.md                   You are here
+│
+├── 🎨 assets/
+│   ├── banner.svg                 README hero banner
+│   └── ui-preview.svg             App UI preview graphic
 │
 ├── 📂 data/
 │   └── reviews.csv                Generated labelled dataset          [Step 1]
@@ -63,33 +110,27 @@ sentiment_nlp_app/
 
 ---
 
-## 🚀 Quickstart
+## 🔄 The Pipeline
 
-```bash
-cd sentiment_nlp_app
-pip install -r requirements.txt
+```mermaid
+flowchart LR
+    A["📥 Data Acquisition\nreviews.csv"] --> B["🧹 Text Preparation\ncleaning · negation tagging"]
+    B --> C["🧮 Feature Engineering\nTF-IDF · meta features"]
+    C --> D["🧠 Modelling\nLogistic Regression"]
+    D --> E["🚀 Deployment\nFlask API"]
+    E --> F["🌀 3D UI\nThree.js orb"]
 
-# 1️⃣  Generate data + train the model
-python src/train_model.py
-
-# 2️⃣  Launch the API + 3D UI
-python app.py
+    style A fill:#151a2c,stroke:#262d47,color:#eae6d9
+    style B fill:#151a2c,stroke:#262d47,color:#eae6d9
+    style C fill:#151a2c,stroke:#262d47,color:#eae6d9
+    style D fill:#151a2c,stroke:#262d47,color:#eae6d9
+    style E fill:#151a2c,stroke:#262d47,color:#eae6d9
+    style F fill:#151a2c,stroke:#262d47,color:#eae6d9
 ```
 
-Then open **http://localhost:5000** →  type/paste a review (or click an example
-chip) → hit **Analyze sentiment**.
-
-<div align="center">
-
-| Orb colour | Meaning |
-|:---:|:---|
-| 🟢 Teal | Positive |
-| 🟡 Amber | Neutral |
-| 🔴 Coral | Negative |
-
-*Bigger orb = higher confidence · Spikier/noisier orb = higher uncertainty*
-
-</div>
+> Mermaid diagrams render automatically on GitHub. If your viewer doesn't
+> support Mermaid, the flow above simply reads left → right through the
+> six numbered sections below.
 
 ---
 
@@ -215,9 +256,11 @@ build → test → deploy.
 The orb is a **fibonacci-distributed point cloud** (`THREE.Points`),
 animated per-frame with sine-noise displacement:
 
-- **Turbulence** ∝ `1 − confidence` → uncertain predictions look spikier
-- **Scale** ∝ `confidence` → confident predictions look bigger
-- **Colour** lerps smoothly to the predicted class colour
+| Visual property | Driven by |
+|---|---|
+| 🎨 Colour | Predicted class (teal / amber / coral), smoothly interpolated |
+| 📏 Scale | Confidence — more confident → bigger orb |
+| 🌊 Turbulence | `1 − confidence` — more uncertain → spikier, noisier |
 
 No build tooling required — everything lives in `static/index.html` and
 loads Three.js from a CDN.
@@ -225,5 +268,7 @@ loads Three.js from a CDN.
 <div align="center">
 
 ---
+
 *Built as a reference implementation for an end-to-end NLP assignment.*
+
 </div>
