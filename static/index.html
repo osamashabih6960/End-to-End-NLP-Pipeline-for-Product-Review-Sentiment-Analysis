@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sentiment Lab — 3D Text Sentiment Analyzer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d1120;
+    --panel: #151a2c;
+    --panel-line: #262d47;
+    --text: #eae6d9;
+    --text-muted: #8c93ac;
+    --positive: #4fd1a5;
+    --negative: #e8735a;
+    --neutral: #e8b94f;
+    --accent-line: #3a4166;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0; height:100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x:hidden;
+  }
+  #canvas-wrap{
+    position:fixed; inset:0; z-index:0;
+  }
+  .wrap{
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    padding: 40px clamp(20px, 5vw, 72px);
+  }
+  header{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom: 1px solid var(--panel-line);
+    padding-bottom: 22px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1{
+    font-family:'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(28px, 4vw, 44px);
+    margin:0;
+    letter-spacing: -0.01em;
+  }
+  header p{
+    margin:6px 0 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+    max-width: 46ch;
+  }
+  .status{
+    text-align:right;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .status .dot{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background: var(--neutral); margin-right:6px;
+  }
+  .status.ready .dot{ background: var(--positive); }
+  .status.error .dot{ background: var(--negative); }
+
+  main{
+    flex:1;
+    display:grid;
+    grid-template-columns: minmax(300px, 420px) 1fr;
+    gap: 36px;
+  }
+  @media (max-width: 880px){
+    main{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: rgba(21,26,44,0.72);
+    border: 1px solid var(--panel-line);
+    border-radius: 14px;
+    padding: 26px;
+    backdrop-filter: blur(6px);
+  }
+
+  label.field-label{
+    display:block; font-size: 12.5px; color: var(--text-muted);
+    margin-bottom: 10px; letter-spacing: 0.01em;
+  }
+  textarea{
+    width:100%; min-height: 150px; resize: vertical;
+    background: #0b0e1c;
+    border: 1px solid var(--panel-line);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 14px;
+    outline: none;
+    transition: border-color .2s ease;
+  }
+  textarea:focus{ border-color: var(--accent-line); }
+
+  .chips{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
+  }
+  .chip{
+    font-size: 12.5px;
+    color: var(--text-muted);
+    background: #0b0e1c;
+    border: 1px solid var(--panel-line);
+    border-radius: 999px;
+    padding: 7px 13px;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .chip:hover{ border-color: var(--accent-line); color: var(--text); }
+
+  button#analyze{
+    margin-top: 20px;
+    width:100%;
+    background: var(--text);
+    color: #0d1120;
+    border:none;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    cursor:pointer;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  button#analyze:hover{ opacity:0.9; }
+  button#analyze:active{ transform: scale(0.98); }
+  button#analyze:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  .metrics-row{
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--panel-line);
+    font-size: 12.5px;
+    color: var(--text-muted);
+    display:flex; justify-content:space-between;
+  }
+  .metrics-row b{ color: var(--text); font-weight: 600; }
+
+  .stage{
+    display:flex; flex-direction:column;
+  }
+  .orb-panel{
+    flex:1;
+    min-height: 380px;
+    position:relative;
+    border-radius: 14px;
+    overflow:hidden;
+    border: 1px solid var(--panel-line);
+    background: radial-gradient(ellipse at center, #131731 0%, #0b0e1c 70%);
+  }
+  #orb-canvas{ width:100%; height:100%; display:block; }
+
+  .label-overlay{
+    position:absolute; top:22px; left:26px;
+    font-family:'Fraunces', serif;
+    font-size: 15px;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+  .label-overlay .big{
+    font-size: 34px;
+    color: var(--text);
+    display:block;
+    margin-top: 4px;
+    transition: color .4s ease;
+  }
+
+  .bars{
+    display:flex; flex-direction:column; gap:14px;
+    margin-top: 22px;
+  }
+  .bar-row{ display:flex; align-items:center; gap:14px; }
+  .bar-row .name{
+    width: 76px; font-size: 13px; color: var(--text-muted); text-align:right;
+  }
+  .bar-track{
+    flex:1; height:9px; border-radius:6px; background:#0b0e1c;
+    border:1px solid var(--panel-line);
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%; width:0%; border-radius:6px;
+    transition: width .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .bar-row .pct{
+    width: 46px; font-size:13px; color: var(--text-muted); text-align:right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hint{
+    font-size: 12px; color: var(--text-muted); margin-top:16px; line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+<div id="canvas-wrap"></div>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Sentiment Lab</h1>
+      <p>An end-to-end NLP pipeline — TF-IDF + logistic regression under the hood — rendered here as a living 3D signal.</p>
+    </div>
+    <div class="status" id="status"><span class="dot"></span>checking model…</div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <label class="field-label" for="input-text">PASTE OR TYPE A REVIEW</label>
+      <textarea id="input-text" placeholder="e.g. The battery life on this thing is incredible, best purchase this year."></textarea>
+
+      <div class="chips" id="chips">
+        <div class="chip" data-text="I absolutely love this laptop, the battery life is outstanding.">😊 positive example</div>
+        <div class="chip" data-text="Terrible product, it broke within a week and support never responded.">😡 negative example</div>
+        <div class="chip" data-text="It's an average blender, does what it says, nothing more.">😐 neutral example</div>
+      </div>
+
+      <button id="analyze">Analyze sentiment</button>
+
+      <div class="metrics-row" id="metrics-row" style="display:none;">
+        <span>Model macro-F1: <b id="metric-f1">—</b></span>
+        <span>Latency: <b id="metric-latency">—</b></span>
+      </div>
+
+      <p class="hint">Text is cleaned, negation-tagged, vectorised (TF-IDF, 1–2 grams) and scored by a logistic regression classifier trained offline. The orb on the right renders the live probability distribution in 3D.</p>
+    </section>
+
+    <section class="stage">
+      <div class="orb-panel">
+        <canvas id="orb-canvas"></canvas>
+        <div class="label-overlay">
+          reading as
+          <span class="big" id="label-big">—</span>
+        </div>
+      </div>
+
+      <div class="bars">
+        <div class="bar-row">
+          <span class="name">positive</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-positive" style="background:var(--positive)"></div></div>
+          <span class="pct" id="pct-positive">0%</span>
+        </div>
+        <div class="bar-row">
+          <span class="name">neutral</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-neutral" style="background:var(--neutral)"></div></div>
+          <span class="pct" id="pct-neutral">0%</span>
+        </div>
+        <div class="bar-row">
+          <span class="name">negative</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-negative" style="background:var(--negative)"></div></div>
+          <span class="pct" id="pct-negative">0%</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ---------------------------------------------------------------------
+   3D ORB — particle sphere that morphs colour + turbulence with sentiment
+--------------------------------------------------------------------- */
+const canvas = document.getElementById('orb-canvas');
+const orbPanel = canvas.parentElement;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(0, 0, 6.2);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+function resizeRenderer(){
+  const w = orbPanel.clientWidth, h = orbPanel.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resizeRenderer);
+
+// Particle sphere geometry
+const PARTICLE_COUNT = 1400;
+const baseRadius = 1.7;
+const positions = new Float32Array(PARTICLE_COUNT * 3);
+const basePositions = new Float32Array(PARTICLE_COUNT * 3);
+const randoms = new Float32Array(PARTICLE_COUNT);
+
+for (let i = 0; i < PARTICLE_COUNT; i++){
+  // fibonacci sphere distribution
+  const idx = i + 0.5;
+  const phi = Math.acos(1 - 2*idx/PARTICLE_COUNT);
+  const theta = Math.PI * (1 + Math.sqrt(5)) * idx;
+  const x = Math.cos(theta) * Math.sin(phi);
+  const y = Math.sin(theta) * Math.sin(phi);
+  const z = Math.cos(phi);
+  positions[i*3] = x * baseRadius;
+  positions[i*3+1] = y * baseRadius;
+  positions[i*3+2] = z * baseRadius;
+  basePositions[i*3] = x;
+  basePositions[i*3+1] = y;
+  basePositions[i*3+2] = z;
+  randoms[i] = Math.random();
+}
+
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+const material = new THREE.PointsMaterial({
+  size: 0.045,
+  color: 0xe8b94f,
+  transparent: true,
+  opacity: 0.9,
+  sizeAttenuation: true,
+});
+const points = new THREE.Points(geometry, material);
+scene.add(points);
+
+// faint connecting ring for depth
+const ringGeo = new THREE.RingGeometry(2.35, 2.36, 128);
+const ringMat = new THREE.MeshBasicMaterial({ color: 0x3a4166, side: THREE.DoubleSide, transparent:true, opacity:0.5 });
+const ring = new THREE.Mesh(ringGeo, ringMat);
+ring.rotation.x = Math.PI / 2.4;
+scene.add(ring);
+
+const COLORS = {
+  positive: new THREE.Color(0x4fd1a5),
+  negative: new THREE.Color(0xe8735a),
+  neutral:  new THREE.Color(0xe8b94f),
+};
+
+let targetColor = COLORS.neutral.clone();
+let currentColor = COLORS.neutral.clone();
+let turbulence = 0.15;      // how noisy/spiky the sphere is (driven by confidence)
+let targetTurbulence = 0.15;
+let targetScale = 1.0;
+let currentScale = 1.0;
+
+let clock = new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  currentColor.lerp(targetColor, 0.05);
+  material.color.copy(currentColor);
+  ringMat.color.copy(currentColor);
+
+  turbulence += (targetTurbulence - turbulence) * 0.05;
+  currentScale += (targetScale - currentScale) * 0.05;
+
+  const posAttr = geometry.attributes.position;
+  for (let i = 0; i < PARTICLE_COUNT; i++){
+    const bx = basePositions[i*3], by = basePositions[i*3+1], bz = basePositions[i*3+2];
+    const noise = Math.sin(t*1.3 + randoms[i]*10) * turbulence;
+    const r = (baseRadius + noise) * currentScale;
+    posAttr.array[i*3] = bx * r;
+    posAttr.array[i*3+1] = by * r;
+    posAttr.array[i*3+2] = bz * r;
+  }
+  posAttr.needsUpdate = true;
+
+  points.rotation.y = t * 0.18;
+  points.rotation.x = Math.sin(t*0.12) * 0.15;
+  ring.rotation.z = t * 0.05;
+
+  renderer.render(scene, camera);
+}
+resizeRenderer();
+animate();
+
+function updateOrb(scores){
+  const top = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
+  const [label, confidence] = top;
+  targetColor = COLORS[label] ? COLORS[label].clone() : COLORS.neutral.clone();
+  targetTurbulence = 0.08 + (1 - confidence) * 0.55;   // uncertain -> spikier/noisier
+  targetScale = 0.85 + confidence * 0.35;              // confident -> larger orb
+  material.size = 0.035 + confidence * 0.02;
+}
+
+/* ---------------------------------------------------------------------
+   API WIRING
+--------------------------------------------------------------------- */
+const $ = (id) => document.getElementById(id);
+const statusEl = $('status');
+const analyzeBtn = $('analyze');
+const inputEl = $('input-text');
+const labelBig = $('label-big');
+
+const BAR_IDS = { positive: 'bar-positive', neutral: 'bar-neutral', negative: 'bar-negative' };
+const PCT_IDS = { positive: 'pct-positive', neutral: 'pct-neutral', negative: 'pct-negative' };
+
+function setStatus(kind, text){
+  statusEl.className = 'status ' + kind;
+  statusEl.innerHTML = '<span class="dot"></span>' + text;
+}
+
+async function checkHealth(){
+  try{
+    const res = await fetch('/api/health');
+    const data = await res.json();
+    if (data.model_ready) setStatus('ready', 'model ready');
+    else setStatus('error', 'model not trained — run train_model.py');
+  }catch(e){
+    setStatus('error', 'API unreachable');
+  }
+  loadMetrics();
+}
+
+async function loadMetrics(){
+  try{
+    const res = await fetch('/api/metrics');
+    if (!res.ok) return;
+    const data = await res.json();
+    $('metric-f1').textContent = (data.macro_f1*100).toFixed(1) + '%';
+    $('metrics-row').style.display = 'flex';
+  }catch(e){ /* ignore */ }
+}
+
+function renderScores(scores){
+  Object.entries(BAR_IDS).forEach(([label, elId]) => {
+    const val = scores[label] || 0;
+    document.getElementById(elId).style.width = (val*100).toFixed(1) + '%';
+    document.getElementById(PCT_IDS[label]).textContent = (val*100).toFixed(0) + '%';
+  });
+}
+
+async function analyze(){
+  const text = inputEl.value.trim();
+  if (!text) { inputEl.focus(); return; }
+  analyzeBtn.disabled = true;
+  analyzeBtn.textContent = 'Analyzing…';
+  try{
+    const res = await fetch('/api/predict', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text})
+    });
+    const data = await res.json();
+    if (!res.ok){ throw new Error(data.error || 'Request failed'); }
+
+    labelBig.textContent = data.label;
+    labelBig.style.color = getComputedStyle(document.documentElement)
+      .getPropertyValue('--' + data.label).trim() || '#eae6d9';
+    renderScores(data.scores);
+    updateOrb(data.scores);
+    $('metric-latency').textContent = data.latency_ms + ' ms';
+    $('metrics-row').style.display = 'flex';
+  }catch(e){
+    setStatus('error', e.message);
+  }finally{
+    analyzeBtn.disabled = false;
+    analyzeBtn.textContent = 'Analyze sentiment';
+  }
+}
+
+analyzeBtn.addEventListener('click', analyze);
+inputEl.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') analyze();
+});
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    inputEl.value = chip.dataset.text;
+    analyze();
+  });
+});
+
+checkHealth();
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<svg width="1200" height="640" viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <radialGradient id="orbBg" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#131731"/>
+      <stop offset="100%" stop-color="#0b0e1c"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="640" fill="#0d1120"/>
+
+  <!-- header -->
+  <text x="48" y="70" font-size="34" fill="#eae6d9" font-family="Georgia, serif">Sentiment Lab</text>
+  <text x="48" y="96" font-size="13.5" fill="#8c93ac">An end-to-end NLP pipeline rendered as a living 3D signal.</text>
+  <circle cx="1120" cy="60" r="4" fill="#4fd1a5"/>
+  <text x="1132" y="64" font-size="12" fill="#8c93ac" text-anchor="end">model ready</text>
+  <line x1="48" y1="118" x2="1152" y2="118" stroke="#262d47"/>
+
+  <!-- left panel -->
+  <rect x="48" y="150" width="380" height="420" rx="14" fill="#151a2c" stroke="#262d47"/>
+  <text x="76" y="188" font-size="11.5" fill="#8c93ac" letter-spacing="0.5">PASTE OR TYPE A REVIEW</text>
+  <rect x="76" y="200" width="324" height="120" rx="10" fill="#0b0e1c" stroke="#262d47"/>
+  <text x="92" y="228" font-size="13" fill="#eae6d9">"The battery life on this thing is</text>
+  <text x="92" y="248" font-size="13" fill="#eae6d9">incredible, best purchase this year."</text>
+
+  <rect x="76" y="336" width="150" height="30" rx="15" fill="#0b0e1c" stroke="#262d47"/>
+  <text x="94" y="356" font-size="11.5" fill="#8c93ac">😊 positive example</text>
+  <rect x="234" y="336" width="150" height="30" rx="15" fill="#0b0e1c" stroke="#262d47"/>
+  <text x="252" y="356" font-size="11.5" fill="#8c93ac">😐 neutral example</text>
+
+  <rect x="76" y="390" width="324" height="46" rx="10" fill="#eae6d9"/>
+  <text x="238" y="418" font-size="14" fill="#0d1120" font-weight="bold" text-anchor="middle">Analyze sentiment</text>
+
+  <line x1="76" y1="458" x2="400" y2="458" stroke="#262d47"/>
+  <text x="76" y="480" font-size="12" fill="#8c93ac">Model macro-F1: <tspan fill="#eae6d9" font-weight="bold">96.4%</tspan></text>
+  <text x="400" y="480" font-size="12" fill="#8c93ac" text-anchor="end">Latency: <tspan fill="#eae6d9" font-weight="bold">42 ms</tspan></text>
+
+  <!-- right panel: orb -->
+  <rect x="452" y="150" width="700" height="330" rx="14" fill="url(#orbBg)" stroke="#262d47"/>
+  <text x="478" y="180" font-size="13" fill="#8c93ac" font-family="Georgia, serif">reading as</text>
+  <text x="478" y="212" font-size="30" fill="#4fd1a5" font-family="Georgia, serif">positive</text>
+
+  <ellipse cx="800" cy="320" rx="220" ry="60" fill="none" stroke="#2c3559" stroke-width="1"/>
+  <g fill="#4fd1a5">
+    <circle cx="800" cy="220" r="3.6"/>
+    <circle cx="860" cy="235" r="2.8"/>
+    <circle cx="740" cy="238" r="3"/>
+    <circle cx="895" cy="270" r="3.4"/>
+    <circle cx="705" cy="272" r="3.2"/>
+    <circle cx="912" cy="315" r="2.8"/>
+    <circle cx="688" cy="318" r="3.6"/>
+    <circle cx="915" cy="360" r="3.2"/>
+    <circle cx="685" cy="362" r="3"/>
+    <circle cx="895" cy="400" r="3.4"/>
+    <circle cx="705" cy="402" r="2.8"/>
+    <circle cx="860" cy="428" r="3.2"/>
+    <circle cx="742" cy="430" r="3"/>
+    <circle cx="800" cy="440" r="3.6"/>
+    <circle cx="800" cy="320" r="5.5"/>
+    <circle cx="770" cy="290" r="2.6"/>
+    <circle cx="830" cy="292" r="2.8"/>
+    <circle cx="785" cy="350" r="2.6"/>
+    <circle cx="820" cy="350" r="2.8"/>
+    <circle cx="800" cy="380" r="2.4"/>
+  </g>
+
+  <!-- bars -->
+  <g font-size="12.5" fill="#8c93ac">
+    <text x="478" y="512" text-anchor="end">positive</text>
+    <rect x="490" y="502" width="560" height="9" rx="4.5" fill="#0b0e1c" stroke="#262d47"/>
+    <rect x="490" y="502" width="470" height="9" rx="4.5" fill="#4fd1a5"/>
+    <text x="1064" y="512">83%</text>
+
+    <text x="478" y="540" text-anchor="end">neutral</text>
+    <rect x="490" y="530" width="560" height="9" rx="4.5" fill="#0b0e1c" stroke="#262d47"/>
+    <rect x="490" y="530" width="78" height="9" rx="4.5" fill="#e8b94f"/>
+    <text x="1064" y="540">14%</text>
+
+    <text x="478" y="568" text-anchor="end">negative</text>
+    <rect x="490" y="558" width="560" height="9" rx="4.5" fill="#0b0e1c" stroke="#262d47"/>
+    <rect x="490" y="558" width="18" height="9" rx="4.5" fill="#e8735a"/>
+    <text x="1064" y="568">3%</text>
+  </g>
+</svg>

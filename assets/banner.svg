@@ -1,0 +1,92 @@
+<svg width="1200" height="360" viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="75%">
+      <stop offset="0%" stop-color="#161b34"/>
+      <stop offset="60%" stop-color="#0d1120"/>
+      <stop offset="100%" stop-color="#090b16"/>
+    </radialGradient>
+    <radialGradient id="orbGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#4fd1a5" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#e8b94f" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#e8735a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="titleFade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#eae6d9"/>
+      <stop offset="100%" stop-color="#c9c4b3"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="360" fill="url(#bg)"/>
+
+  <!-- faint grid lines -->
+  <g stroke="#232a49" stroke-width="1" opacity="0.5">
+    <line x1="0" y1="90" x2="1200" y2="90"/>
+    <line x1="0" y1="270" x2="1200" y2="270"/>
+  </g>
+
+  <!-- orb glow -->
+  <circle cx="960" cy="180" r="180" fill="url(#orbGlow)"/>
+
+  <!-- particle sphere (static illustration) -->
+  <g fill="#e8b94f">
+    <circle cx="960" cy="60" r="3.4"/>
+    <circle cx="1020" cy="75" r="2.6"/>
+    <circle cx="895" cy="80" r="2.8"/>
+    <circle cx="1050" cy="115" r="3.2"/>
+    <circle cx="870" cy="120" r="3.0"/>
+    <circle cx="1075" cy="160" r="2.6"/>
+    <circle cx="845" cy="165" r="3.4"/>
+    <circle cx="1080" cy="205" r="3.0"/>
+    <circle cx="842" cy="205" r="2.8"/>
+    <circle cx="1060" cy="245" r="3.2"/>
+    <circle cx="862" cy="248" r="2.6"/>
+    <circle cx="1020" cy="278" r="3.0"/>
+    <circle cx="900" cy="280" r="2.8"/>
+    <circle cx="960" cy="300" r="3.4"/>
+    <circle cx="960" cy="180" r="4.6" fill="#4fd1a5"/>
+    <circle cx="935" cy="150" r="2.4" fill="#4fd1a5"/>
+    <circle cx="990" cy="155" r="2.6" fill="#4fd1a5"/>
+    <circle cx="1010" cy="190" r="2.2" fill="#e8735a"/>
+    <circle cx="920" cy="205" r="2.6" fill="#4fd1a5"/>
+    <circle cx="965" cy="220" r="2.8" fill="#e8735a"/>
+    <circle cx="945" cy="120" r="2.2"/>
+    <circle cx="990" cy="230" r="2.4"/>
+    <circle cx="1005" cy="130" r="2.6"/>
+    <circle cx="905" cy="160" r="2.2"/>
+    <circle cx="1035" cy="225" r="2.6"/>
+    <circle cx="900" cy="230" r="2.4"/>
+  </g>
+  <ellipse cx="960" cy="180" rx="230" ry="60" fill="none" stroke="#3a4166" stroke-width="1.2" opacity="0.6"/>
+
+  <!-- title block -->
+  <text x="80" y="150" font-family="Georgia, 'Times New Roman', serif" font-size="58" fill="url(#titleFade)">Sentiment Lab</text>
+  <text x="80" y="188" font-family="Helvetica, Arial, sans-serif" font-size="17" letter-spacing="0.5" fill="#8c93ac">End-to-end NLP pipeline · TF-IDF + Logistic Regression · Live 3D visualisation</text>
+
+  <!-- pipeline chips -->
+  <g font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#eae6d9">
+    <g>
+      <rect x="80" y="230" width="118" height="30" rx="15" fill="#151a2c" stroke="#262d47"/>
+      <text x="99" y="249">Acquisition</text>
+    </g>
+    <g>
+      <rect x="210" y="230" width="128" height="30" rx="15" fill="#151a2c" stroke="#262d47"/>
+      <text x="229" y="249">Preprocessing</text>
+    </g>
+    <g>
+      <rect x="350" y="230" width="118" height="30" rx="15" fill="#151a2c" stroke="#262d47"/>
+      <text x="369" y="249">Features</text>
+    </g>
+    <g>
+      <rect x="480" y="230" width="108" height="30" rx="15" fill="#151a2c" stroke="#262d47"/>
+      <text x="499" y="249">Modelling</text>
+    </g>
+    <g>
+      <rect x="600" y="230" width="120" height="30" rx="15" fill="#151a2c" stroke="#262d47"/>
+      <text x="619" y="249">Deployment</text>
+    </g>
+    <path d="M198 245 L210 245" stroke="#3a4166" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <path d="M338 245 L350 245" stroke="#3a4166" stroke-width="1.5"/>
+    <path d="M468 245 L480 245" stroke="#3a4166" stroke-width="1.5"/>
+    <path d="M588 245 L600 245" stroke="#3a4166" stroke-width="1.5"/>
+  </g>
+</svg>
